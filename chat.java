@@ -29,10 +29,54 @@ private int contador = 1;
     catch (IOException excepcionES){
       excepcionES.printStackTrace();
   }
-  public void esperarConexion() throws IOException {
+  private void esperarConexion() throws IOException {
     mostrarMensaje("Esperando una conexion\n");
     conexion = servidor.accept();
     mostrarMensaje("Conexion " + contador + " recibida de: " + conexion.getInetAddress().getHostName());
+  }
+  private void obtenerFlujos() throws IOException{
+    salida = new ObjectOutputStream(conexion.getOutputStream());
+    salida.flush();
+    entrada = new ObjectInputStream(conexion.getInputStream());
+    mostrarMensaje("\nObtener flujos de E/S: OK\n");
+  }
+  private void enviarDatos(String mensaje){
+    try{
+      salida .writeObject("SERVIDOR dice: " + mensaje);
+      salida.flush();
+      mostrarMensaje("\nSERVIDOR dice: " + mensaje);
+    }
+    catch(IOException e){
+      areaPantalla.append("\nERROR")
+    }
+  }
+  private void procesarConexion() throws IOException{
+    String mensaje ="Conexion Exitosa";
+    enviarDatos(mensaje);
+    campoIntroducir.setEnabled(true);
+    do
+    {
+      try{
+        mensaje = (String) entrada.readObject();
+        mostrarMensaje("\n" + mensaje);
+      }catch(ClassNotFoundException excepcion){
+        mostrarMensaje("\nSe recibio un tipo de objeto desconocido")
+      }
+    }while (!mensaje.equals("CLIENTE dice: TERMINAR"));
+  }
+  private void cerrarConexion(){
+    mostrarMensjae("\nTerminando Conexion\n");
+    campoIntroducir.setEnabled(false);
+    try{
+      salida.close();
+      entrada.close();
+      conexion.close();
+    }catch (IOException ioe){
+      ioe.printStackTrace();
+    }
+  }
+  public class IniciarServer{
+    public
   }
   //continuara ... http://balusoft.net/2010/08/20/how-to-mini-chat-en%C2%A0java-clase-servidor/
 
